@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:my_books/controllers/books_controller.dart';
 import 'package:my_books/utils/app_routes.dart';
 import 'package:my_books/views/auth/login_view.dart';
-import 'package:my_books/views/books_details/book_details_view.dart';
 import 'package:provider/provider.dart';
 import '../../controllers/auth_controller.dart';
 
@@ -86,20 +85,21 @@ class HomeView extends StatelessWidget {
                         ? work.authors!.first.name
                         : 'Unknown author';
 
-                    return InkWell(
-                      onTap: () {
-                        print("work: ${work.toJson()}");
-                        Navigator.of(context).push(
-                          MaterialPageRoute(
-                            builder: (context) => BookDetailsView(book: work),
-                          ),
-                        );
-                      },
-                      child: ListTile(
-                        leading: const Icon(Icons.menu_book_outlined),
-                        title: Text(work.title ?? 'Untitled'),
-                        subtitle: Text(
-                          '$author • ${work.firstPublishYear ?? 'N/A'}',
+                    return ListTile(
+                      leading: const Icon(Icons.menu_book_outlined),
+                      title: Text(work.title ?? 'Untitled'),
+                      subtitle: Text(
+                        '$author • ${work.firstPublishYear ?? 'N/A'}',
+                      ),
+                      trailing: InkWell(
+                        onTap: () {
+                          controller.onFavoriteTap(work.key);
+                        },
+                        child: Icon(
+                          Icons.save,
+                          color: controller.favList.contains(work.key!)
+                              ? Colors.red
+                              : Colors.grey,
                         ),
                       ),
                     );

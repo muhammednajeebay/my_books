@@ -1,16 +1,19 @@
 import 'package:flutter/foundation.dart';
 import 'package:my_books/models/book_model.dart';
 import 'package:my_books/services/api_service.dart';
+import 'package:my_books/services/favorite_service.dart';
 
 class BooksController extends ChangeNotifier {
   BooksController({ApiService? apiService})
-      : _apiService = apiService ?? ApiService() {
+    : _apiService = apiService ?? ApiService() {
     init();
   }
 
   final ApiService _apiService;
+  FavoriteService favoriteService = FavoriteService();
 
   final List<Work> _works = [];
+  final List<String> _favorites = [];
   bool _initialLoading = false;
   bool _loadingMore = false;
   String? _errorMessage;
@@ -18,6 +21,7 @@ class BooksController extends ChangeNotifier {
   bool _hasMore = true;
 
   List<Work> get works => List.unmodifiable(_works);
+  List<String> get favList => List.unmodifiable(_favorites);
   bool get isInitialLoading => _initialLoading;
   bool get isLoadingMore => _loadingMore;
   String? get errorMessage => _errorMessage;
@@ -37,6 +41,8 @@ class BooksController extends ChangeNotifier {
       _initialLoading = false;
       notifyListeners();
     }
+
+    getFavoriteList();
   }
 
   Future<void> refresh() async {
@@ -69,7 +75,8 @@ class BooksController extends ChangeNotifier {
     final newItems = response.works ?? [];
 
     _works.addAll(newItems);
-    _hasMore = newItems.isNotEmpty &&
+    _hasMore =
+        newItems.isNotEmpty &&
         _works.length < (response.workCount ?? _works.length);
   }
 
@@ -83,5 +90,25 @@ class BooksController extends ChangeNotifier {
   void dispose() {
     _apiService.dispose();
     super.dispose();
+  }
+
+  Future<void> getFavoriteList() async {
+    var list = await favoriteService.getFavorites();
+    _favorites.addAll(list);
+  }
+
+  void onFavoriteTap(String? id) {
+    if (id != null) {
+      if (_favorites.contains(id)) {
+        // already favorite
+        favoriteService.onRemove(id: id);
+        _favorites.remove(id);
+      } else {
+        // adding new favorite
+        favoriteService.setFavorites(id: id);
+        _favorites.add(id);
+      }
+      notifyListeners();
+    }
   }
 }
