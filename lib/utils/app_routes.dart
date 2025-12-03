@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-/// Centralized route names for navigation
+/// Centralized navigation routes for the app
 class AppRoutes {
   static Future<dynamic> navigateTo(BuildContext context, Widget widget) async {
     return Navigator.of(
@@ -8,3 +8,4 @@ class AppRoutes {
     ).push(MaterialPageRoute(builder: (context) => widget));
   }
 }
+

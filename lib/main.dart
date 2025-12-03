@@ -9,7 +9,7 @@ void main() {
 }
 
 /// Main Application Widget
-/// Sets up Provider, routing, and authentication state management
+/// Sets up Provider, and authentication state management
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
 
